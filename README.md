@@ -17,4 +17,4 @@
 ![alt text](<capturas/Captura de pantalla 2025-07-30 010042.png>)
 
 ## Diagrama UML
-![UML](/diagramas/uml_hotel.png
+![alt text](capturas/uml.png)
