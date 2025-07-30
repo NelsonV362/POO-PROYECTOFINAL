@@ -6,7 +6,7 @@ import java.awt.*;
 
 public class ClienteView extends JPanel {
     private JTextField txtDni, txtNombre, txtApellido, txtTelefono, txtEmail;
-    private JButton btnAgregar, btnActualizar, btnEliminar;
+    private JButton btnAgregar, btnEliminar;
     private JTable tablaClientes;
     private DefaultTableModel modeloTabla;
 
@@ -31,11 +31,9 @@ public class ClienteView extends JPanel {
         }
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         btnAgregar = new JButton("Agregar");
-        btnActualizar = new JButton("Actualizar");
         btnEliminar = new JButton("Eliminar");
 
         buttonPanel.add(btnAgregar);
-        buttonPanel.add(btnActualizar);
         buttonPanel.add(btnEliminar);
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(formPanel, BorderLayout.CENTER);
@@ -54,10 +52,6 @@ public class ClienteView extends JPanel {
 
     public JButton getBtnAgregar() {
         return btnAgregar;
-    }
-
-    public JButton getBtnActualizar() {
-        return btnActualizar;
     }
 
     public JButton getBtnEliminar() {

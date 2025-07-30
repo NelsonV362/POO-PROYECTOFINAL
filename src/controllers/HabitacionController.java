@@ -7,17 +7,18 @@ import java.util.List;
 public class HabitacionController {
     private HabitacionView vista;
     private DataManager modelo;
+    private ReservaView reservaView;
     
-    public HabitacionController(HabitacionView vista, DataManager modelo) {
+    public HabitacionController(HabitacionView vista, DataManager modelo, ReservaView reservaView) {
         this.vista = vista;
         this.modelo = modelo;
+        this.reservaView = reservaView;
         configurarListeners();
         cargarHabitaciones();
     }
     
     private void configurarListeners() {
         vista.getBtnAgregar().addActionListener(e -> agregarHabitacion());
-        vista.getBtnActualizar().addActionListener(e -> actualizarHabitacion());
         vista.getBtnEliminar().addActionListener(e -> eliminarHabitacion());
     }
     
@@ -47,6 +48,7 @@ public class HabitacionController {
                 vista.agregarHabitacionATabla(numero, tipo, precio, true);
                 vista.limpiarFormulario();
                 vista.mostrarMensaje("Habitación agregada exitosamente");
+                actualizarHabitacionesEnReservas();
             }
         } catch (NumberFormatException e) {
             vista.mostrarError("Número y precio deben ser valores válidos");
@@ -54,10 +56,16 @@ public class HabitacionController {
             vista.mostrarError("Tipo de habitación no válido");
         }
     }
-    
-    private void actualizarHabitacion() {
+
+    private void actualizarHabitacionesEnReservas() {
+        List<Habitacion> habitaciones = modelo.obtenerHabitaciones();
+        String[] habitacionesArray = habitaciones.stream()
+            .filter(Habitacion::isDisponible)
+            .map(h -> "Hab #" + h.getNumero() + " - " + h.getTipo() + " ($" + h.getPrecioPorNoche() + ")")
+            .toArray(String[]::new);
+        reservaView.cargarHabitaciones(habitacionesArray);
     }
-    
+
     private void eliminarHabitacion() {
     }
 }

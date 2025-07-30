@@ -9,7 +9,6 @@ public class HabitacionView extends JPanel {
     private final JComboBox<String> cbTipo = new JComboBox<>(new String[]{"INDIVIDUAL", "DOBLE", "SUITE"});
     private final JTextField txtPrecio = new JTextField();
     private final JButton btnAgregar = new JButton("Agregar");
-    private final JButton btnActualizar = new JButton("Actualizar");
     private final JButton btnEliminar = new JButton("Eliminar");
     private final JTable tablaHabitaciones;
     private final DefaultTableModel modeloTabla;
@@ -28,7 +27,6 @@ public class HabitacionView extends JPanel {
         formPanel.add(txtPrecio);
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         buttonPanel.add(btnAgregar);
-        buttonPanel.add(btnActualizar);
         buttonPanel.add(btnEliminar);
 
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -55,10 +53,6 @@ public class HabitacionView extends JPanel {
 
     public JButton getBtnAgregar() {
         return btnAgregar;
-    }
-
-    public JButton getBtnActualizar() {
-        return btnActualizar;
     }
 
     public JButton getBtnEliminar() {

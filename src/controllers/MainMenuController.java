@@ -23,8 +23,8 @@ public class MainMenuController {
         vista.getPanelHabitaciones().add(habitacionView);
         vista.getPanelReservas().add(reservaView);
         
-        new ClienteController(clienteView, modelo);
-        new HabitacionController(habitacionView, modelo);
+        new ClienteController(clienteView, modelo, reservaView);
+        new HabitacionController(habitacionView, modelo, reservaView);
         new ReservaController(reservaView, modelo, clienteView, habitacionView);
         configurarPermisos();
     }
