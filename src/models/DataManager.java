@@ -2,6 +2,7 @@ package models;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,6 @@ public class DataManager {
     private static final String RESERVAS_FILE = "reservas.txt";
     public static final String USUARIOS_FILE = "usuarios.txt";
 
-    // Métodos genéricos de archivo
     private List<String> cargarDatos(String archivo) {
         List<String> datos = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
@@ -19,9 +19,7 @@ public class DataManager {
             while ((linea = reader.readLine()) != null) {
                 datos.add(linea);
             }
-        } catch (IOException ignored) {
-            // Archivo no encontrado, se creará al guardar
-        }
+        } catch (IOException ignored) {}
         return datos;
     }
 
@@ -35,7 +33,6 @@ public class DataManager {
         }
     }
 
-    // USUARIOS
     public Usuario autenticarUsuario(String nombre, String password) {
         for (String linea : cargarDatos(USUARIOS_FILE)) {
             String[] partes = linea.split(",");
@@ -48,7 +45,6 @@ public class DataManager {
         return null;
     }
 
-    // CLIENTES
     public boolean agregarCliente(Cliente cliente) {
         List<String> clientes = cargarDatos(CLIENTES_FILE);
         clientes.add(clienteToTxt(cliente));
@@ -78,7 +74,6 @@ public class DataManager {
         return null;
     }
 
-    // HABITACIONES
     public boolean agregarHabitacion(Habitacion h) {
         List<String> habitaciones = cargarDatos(HABITACIONES_FILE);
         habitaciones.add(habitacionToTxt(h));
@@ -115,7 +110,6 @@ public class DataManager {
         return null;
     }
 
-    // RESERVAS
     public boolean agregarReserva(Reserva r) {
         List<String> reservas = cargarDatos(RESERVAS_FILE);
         reservas.add(reservaToTxt(r));
@@ -137,8 +131,8 @@ public class DataManager {
                 r.getCodigo(),
                 r.getCliente().getDni(),
                 String.valueOf(r.getHabitacion().getNumero()),
-                String.valueOf(r.getFechaCheckIn().toEpochDay()),
-                String.valueOf(r.getFechaCheckOut().toEpochDay()),
+                String.valueOf(r.getFechaCheckIn().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()),
+                String.valueOf(r.getFechaCheckOut().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()),
                 String.valueOf(r.getPrecioTotal()),
                 String.valueOf(r.isActiva())
         );
@@ -153,8 +147,8 @@ public class DataManager {
         Habitacion habitacion = buscarHabitacionPorNumero(Integer.parseInt(p[2]));
         if (cliente == null || habitacion == null) return null;
 
-        LocalDate checkIn = LocalDate.ofEpochDay(Long.parseLong(p[3]));
-        LocalDate checkOut = LocalDate.ofEpochDay(Long.parseLong(p[4]));
+        LocalDate checkIn = LocalDate.parse(p[3]);
+        LocalDate checkOut = LocalDate.parse(p[4]);
         boolean activa = Boolean.parseBoolean(p[6]);
 
         Reserva reserva = new Reserva(codigo, cliente, habitacion, checkIn, checkOut);

@@ -10,6 +10,7 @@ public class Reserva {
     private final LocalDate fechaCheckOut;
     private final double precioTotal;
     private boolean activa;
+
     public Reserva(String codigo, Cliente cliente, Habitacion habitacion, LocalDate fechaCheckIn, LocalDate fechaCheckOut) {
         if (fechaCheckOut.isBefore(fechaCheckIn)) {
             throw new IllegalArgumentException("La fecha de check-out no puede ser nunca una fecha pasada al check-in.");
@@ -28,13 +29,33 @@ public class Reserva {
         return noches * habitacion.getPrecioPorNoche();
     }
 
-    public String getCodigo() { return codigo; }
-    public Cliente getCliente() { return cliente; }
-    public Habitacion getHabitacion() { return habitacion; }
-    public LocalDate getFechaCheckIn() { return fechaCheckIn; }
-    public LocalDate getFechaCheckOut() { return fechaCheckOut; }
-    public double getPrecioTotal() { return precioTotal; }
-    public boolean isActiva() { return activa; }
+   public String getCodigo() {
+        return codigo;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public Habitacion getHabitacion() {
+        return habitacion;
+    }
+
+    public LocalDate getFechaCheckIn() {
+        return fechaCheckIn;
+    }
+
+    public LocalDate getFechaCheckOut() {
+        return fechaCheckOut;
+    }
+
+    public double getPrecioTotal() {
+        return precioTotal;
+    }
+
+    public boolean isActiva() {
+        return activa;
+    }
 
     public void cancelar() {
         if (activa) {
