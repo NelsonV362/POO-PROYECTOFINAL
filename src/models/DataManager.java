@@ -2,7 +2,6 @@ package models;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,13 +125,14 @@ public class DataManager {
         return lista;
     }
 
+    // ✅ Guardar fechas en formato ISO yyyy-MM-dd
     private String reservaToTxt(Reserva r) {
         return String.join(",",
                 r.getCodigo(),
                 r.getCliente().getDni(),
                 String.valueOf(r.getHabitacion().getNumero()),
-                String.valueOf(r.getFechaCheckIn().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()),
-                String.valueOf(r.getFechaCheckOut().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()),
+                r.getFechaCheckIn().toString(), // Guardar fecha como texto
+                r.getFechaCheckOut().toString(),
                 String.valueOf(r.getPrecioTotal()),
                 String.valueOf(r.isActiva())
         );
