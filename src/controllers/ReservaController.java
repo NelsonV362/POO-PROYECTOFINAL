@@ -68,7 +68,7 @@ public class ReservaController {
             if (modelo.agregarReserva(reserva)) {
                 vista.mostrarMensaje("Reserva creada exitosamente");
                 vista.limpiarFormulario();
-                cargarComboboxes(); // Actualizar habitaciones disponibles
+                cargarComboboxes();
             }
         } catch (Exception e) {
             vista.mostrarError("Error al crear reserva: " + e.getMessage());
