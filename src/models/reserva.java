@@ -10,7 +10,7 @@ public class Reserva {
     private final double precioTotal;
     private boolean activa;
 
-    public Reserva(String codigo, Cliente cliente, Habitacion habitacion, Date fechaCheckIn, Date fechaCheckOut) {
+    public Reserva(String codigo, Cliente cliente, Habitacion habitacion, Date fechaCheckIn, Date fechaCheckOut, boolean activa) {
         if (fechaCheckOut.before(fechaCheckIn)) {
             throw new IllegalArgumentException("La fecha de check-out no puede ser anterior a la fecha de check-in.");
         }
@@ -19,7 +19,7 @@ public class Reserva {
         this.habitacion = Objects.requireNonNull(habitacion, "Habitación no puede ser null");
         this.fechaCheckIn = fechaCheckIn;
         this.fechaCheckOut = fechaCheckOut;
-        this.activa = true;
+        this.activa = activa;
         this.precioTotal = calcularPrecioTotal();
     }
 

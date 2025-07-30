@@ -2,6 +2,7 @@ package models;
 
 import models.Reserva;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -184,15 +185,36 @@ public class DataManager {
     }
 
 
+    // public List<Reserva> obtenerReservas() {
+    //     List<Reserva> lista = new ArrayList<>();
+    //     for (String linea : cargarDatos(RESERVAS_FILE)) {
+    //         Reserva r = txtToReserva(linea);
+    //         if (r != null) lista.add(r);
+    //     }
+    //     return lista;
+    // }
+    
     public List<Reserva> obtenerReservas() {
         List<Reserva> lista = new ArrayList<>();
         for (String linea : cargarDatos(RESERVAS_FILE)) {
-            Reserva r = txtToReserva(linea);
-            if (r != null) lista.add(r);
+            String[] p = linea.split(",");
+            if (p.length == 7) {
+                String codigo = p[0];
+                Cliente cliente = buscarClientePorDni(p[1]);
+                Habitacion habitacion = buscarHabitacionPorNumero(Integer.parseInt(p[2]));
+                Date checkIn = new SimpleDateFormat("dd/MM/yyyy").parse("");
+                int num = Integer.parseInt(p[0]);
+                TipoHabitacion tipo = TipoHabitacion.valueOf(p[1]);
+                double precio = Double.parseDouble(p[2]);
+                boolean disponible = Boolean.parseBoolean(p[3]);
+                Reserva r = new Reserva(codigo, cliente, null, null, null, disponible);
+                Habitacion h = new Habitacion(num, tipo, precio);
+                lista.add(r);
+            }
         }
         return lista;
     }
-    
+
     public boolean agregarReserva(Reserva r) {
         List<String> reservas = cargarDatos(RESERVAS_FILE);
         reservas.add(reservaToTxt(r));
@@ -213,25 +235,10 @@ public class DataManager {
     }
 
     private Reserva txtToReserva(String linea) {
-        String[] partes = linea.split(",");
-        if (partes.length != 7) {
-            System.err.println("Línea con formato incorrecto: " + linea);
-            return null;
-        }
 
-        String codigo = partes[0];
-        String dniCliente = partes[1];
-        int numHabitacion = Integer.parseInt(partes[2]);
         long fechaInicio = Long.parseLong(partes[3]);
         long fechaFin = Long.parseLong(partes[4]);
         boolean activa = Boolean.parseBoolean(partes[6]);
-
-        Cliente cliente = buscarClientePorDni(dniCliente);
-        Habitacion habitacion = buscarHabitacionPorNumero(numHabitacion);
-
-        if (cliente == null || habitacion == null) {
-            return null;
-        }
 
         Reserva reserva = new Reserva(codigo, cliente, habitacion, new Date(fechaInicio), new Date(fechaFin));
         if (!activa) {

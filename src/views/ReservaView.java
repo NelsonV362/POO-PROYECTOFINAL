@@ -3,13 +3,15 @@ package views;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ReservaView extends JPanel {
     private JTextField txtCodigo;
     private JComboBox<String> cbClientes;
     private JComboBox<String> cbHabitaciones;
-    private JTextField txtFechaInicio;
-    private JTextField txtFechaFin;
+    private JSpinner checkIn;
+    private JSpinner checkOut;
     private JButton btnCrear;
     private JButton btnCancelar;
     private JButton btnBuscar;
@@ -34,13 +36,15 @@ public class ReservaView extends JPanel {
         cbHabitaciones = new JComboBox<>();
         formPanel.add(cbHabitaciones);
         
-        formPanel.add(new JLabel("Fecha Inicio (dd/mm/aaaa):"));
-        txtFechaInicio = new JTextField();
-        formPanel.add(txtFechaInicio);
+        formPanel.add(new JLabel("Check In:"));
+        checkIn = new JSpinner(new SpinnerDateModel());
+        checkIn.setEditor(new JSpinner.DateEditor(checkIn, "dd/MM/yyyy"));
+        formPanel.add(checkIn);
         
-        formPanel.add(new JLabel("Fecha Fin (dd/mm/aaaa):"));
-        txtFechaFin = new JTextField();
-        formPanel.add(txtFechaFin);
+        formPanel.add(new JLabel("Check Out:"));
+        checkOut = new JSpinner(new SpinnerDateModel());
+        checkOut.setEditor(new JSpinner.DateEditor(checkOut, "dd/MM/yyyy"));
+        formPanel.add(checkOut);
         
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         btnCrear = new JButton("Crear Reserva");
@@ -82,12 +86,12 @@ public class ReservaView extends JPanel {
         return (String) cbHabitaciones.getSelectedItem();
     }
 
-    public String getFechaInicio() {
-        return txtFechaInicio.getText();
+    public String getCheckIn() {
+        return new SimpleDateFormat("dd/MM/yyyy").format(checkIn.getValue());
     }
 
-    public String getFechaFin() {
-        return txtFechaFin.getText();
+    public String getCheckOut() {
+        return new SimpleDateFormat("dd/MM/yyyy").format(checkOut.getValue());
     }
 
     public JButton getBtnCrear() {
@@ -134,8 +138,8 @@ public class ReservaView extends JPanel {
     
     public void limpiarFormulario() {
         txtCodigo.setText("");
-        txtFechaInicio.setText("");
-        txtFechaFin.setText("");
+        checkIn.setValue(new Date());
+        checkOut.setValue(new Date());
     }
     
     public int getFilaSeleccionada() {

@@ -59,13 +59,39 @@ public class ReservaController {
         return sdf.format(fecha);
     }
     
+
+    private boolean validarCamposReserva() {
+        String num = vista.getNumero().trim();
+        String precio = vista.getPrecio().trim();
+
+        if (num.isEmpty() || !num.matches("[1-9]\\d?")) {
+            if (num.isEmpty()) vista.mostrarError("El Nro. es obligatorio");
+            else vista.mostrarError("El Nro. no es valido (1 - 99)");
+            return false;
+        }
+
+        if (modelo.buscarHabitacionPorNumero(Integer.parseInt(num)) != null) {
+            vista.mostrarError("El Nro. ya sea registrado");
+            return false;
+        }
+
+        if (precio.isEmpty() || !precio.matches("([1-9]\\d*(\\.\\d+)?|0\\.(0*[1-9]\\d*))")) {
+            if (precio.isEmpty()) vista.mostrarError("El Precio es obligatorio");
+            else vista.mostrarError("El Precio no es valido");
+            return false;
+        }
+        
+        return true;
+    }
+
+
     private void crearReserva() {
         try {
             String codigo = vista.getCodigo();
             String clienteStr = vista.getClienteSeleccionado();
             String habitacionStr = vista.getHabitacionSeleccionada();
-            String fechaInicio = vista.getFechaInicio();
-            String fechaFin = vista.getFechaFin();
+            String fechaInicio = vista.getCheckIn();
+            String fechaFin = vista.getCheckOut();
             
             if (codigo.isEmpty() || clienteStr == null || habitacionStr == null || 
                 fechaInicio.isEmpty() || fechaFin.isEmpty()) {
