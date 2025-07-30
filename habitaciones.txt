@@ -1,1 +1,2 @@
 1,INDIVIDUAL,100.0,true
+2,SUITE,1700.99,true

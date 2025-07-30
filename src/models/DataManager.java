@@ -88,12 +88,6 @@ public class DataManager {
         return null;
     }
 
-    public boolean agregarCliente(Cliente cliente) {
-        List<String> clientes = cargarDatos(CLIENTES_FILE);
-        clientes.add(clienteToTxt(cliente));
-        guardarDatos(CLIENTES_FILE, clientes);
-        return true;
-    }
 
     public List<Cliente> obtenerClientes() {
         List<Cliente> lista = new ArrayList<>();
@@ -106,8 +100,23 @@ public class DataManager {
         return lista;
     }
 
-    private String clienteToTxt(Cliente c) {
-        return String.join(",", c.getDni(), c.getNombre(), c.getApellido(), c.getTelefono(), c.getEmail());
+    public boolean agregarCliente(Cliente cliente) {
+        List<String> clientes = cargarDatos(CLIENTES_FILE);
+        clientes.add(clienteToTxt(cliente));
+        guardarDatos(CLIENTES_FILE, clientes);
+        return true;
+    }
+
+    public boolean eliminarCliente(String dni) {
+        List<String> clientes = cargarDatos(CLIENTES_FILE);
+        boolean eliminado = clientes.removeIf(linea -> {
+            String[] partes = linea.split(",");
+            return partes.length > 0 && partes[0].equals(dni);
+        });
+        if (eliminado) {
+            guardarDatos(CLIENTES_FILE, clientes);
+        }
+        return eliminado;
     }
 
     public Cliente buscarClientePorDni(String dni) {
@@ -117,12 +126,10 @@ public class DataManager {
         return null;
     }
 
-    public boolean agregarHabitacion(Habitacion h) {
-        List<String> habitaciones = cargarDatos(HABITACIONES_FILE);
-        habitaciones.add(habitacionToTxt(h));
-        guardarDatos(HABITACIONES_FILE, habitaciones);
-        return true;
+    private String clienteToTxt(Cliente c) {
+        return String.join(",", c.getDni(), c.getNombre(), c.getApellido(), c.getTelefono(), c.getEmail());
     }
+
 
     public List<Habitacion> obtenerHabitaciones() {
         List<Habitacion> lista = new ArrayList<>();
@@ -140,6 +147,32 @@ public class DataManager {
         }
         return lista;
     }
+    
+    public boolean agregarHabitacion(Habitacion h) {
+        List<String> habitaciones = cargarDatos(HABITACIONES_FILE);
+        habitaciones.add(habitacionToTxt(h));
+        guardarDatos(HABITACIONES_FILE, habitaciones);
+        return true;
+    }
+
+    public boolean eliminarHabitacion(String numero) {
+        List<String> habitaciones = cargarDatos(HABITACIONES_FILE);
+        boolean eliminado = habitaciones.removeIf(linea -> {
+            String[] partes = linea.split(",");
+            return partes.length > 0 && partes[0].equals(numero);
+        });
+        if (eliminado) {
+            guardarDatos(HABITACIONES_FILE, habitaciones);
+        }
+        return eliminado;
+    }
+
+    public Habitacion buscarHabitacionPorNumero(int numero) {
+        for (Habitacion h : obtenerHabitaciones()) {
+            if (h.getNumero() == numero) return h;
+        }
+        return null;
+    }    
 
     private String habitacionToTxt(Habitacion h) {
         return String.join(",",
@@ -150,19 +183,6 @@ public class DataManager {
         );
     }
 
-    public Habitacion buscarHabitacionPorNumero(int numero) {
-        for (Habitacion h : obtenerHabitaciones()) {
-            if (h.getNumero() == numero) return h;
-        }
-        return null;
-    }
-
-    public boolean agregarReserva(Reserva r) {
-        List<String> reservas = cargarDatos(RESERVAS_FILE);
-        reservas.add(reservaToTxt(r));
-        guardarDatos(RESERVAS_FILE, reservas);
-        return true;
-    }
 
     public List<Reserva> obtenerReservas() {
         List<Reserva> lista = new ArrayList<>();
@@ -171,6 +191,13 @@ public class DataManager {
             if (r != null) lista.add(r);
         }
         return lista;
+    }
+    
+    public boolean agregarReserva(Reserva r) {
+        List<String> reservas = cargarDatos(RESERVAS_FILE);
+        reservas.add(reservaToTxt(r));
+        guardarDatos(RESERVAS_FILE, reservas);
+        return true;
     }
 
     private String reservaToTxt(Reserva r) {

@@ -39,6 +39,10 @@ public class HabitacionView extends JPanel {
         add(new JScrollPane(tablaHabitaciones), BorderLayout.CENTER);
     }
 
+    public JTable getTablaHabitaciones() {
+        return tablaHabitaciones;
+    }
+
     public String getNumero() {
         return txtNumero.getText();
     }

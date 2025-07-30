@@ -20,6 +20,7 @@ public class ClienteController {
 
     private void configurarListeners() {
         vista.getBtnAgregar().addActionListener(e -> agregarCliente());
+        vista.getBtnEliminar().addActionListener(e -> eliminarCliente());
     }
 
     private void cargarClientes() {
@@ -39,8 +40,14 @@ public class ClienteController {
         String telefono = vista.getTelefono().trim();
         String email = vista.getEmail().trim();
 
-        if (dni.isEmpty()) {
-            vista.mostrarError("El DNI es obligatorio");
+        if (dni.isEmpty() || dni.length()!=10 || !dni.matches("\\d+")) {
+            if (dni.isEmpty()) vista.mostrarError("El DNI es obligatorio");
+            else vista.mostrarError("El DNI no es valido");
+            return false;
+        }
+
+        if (modelo.buscarClientePorDni(dni) != null) {
+            vista.mostrarError("EL DNI ya fue registrado");
             return false;
         }
 
@@ -54,33 +61,52 @@ public class ClienteController {
             return false;
         }
 
+        if (telefono.isEmpty() || telefono.length()!=10) {
+            if (telefono.isEmpty()) vista.mostrarError("El telefono es obligatorio");
+            else vista.mostrarError("El telefono no es valido");
+            return false;
+        }
+
         if (!email.isEmpty() && !email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
             vista.mostrarError("El email no tiene un formato válido");
             return false;
         }
+        
         return true;
     }
 
     private void agregarCliente() {
-        if (!validarCamposCliente()) {
-            return;
-        }
+        if (!validarCamposCliente()) return;
 
         String dni = vista.getDni().trim();
         String nombre = vista.getNombre().trim();
         String apellido = vista.getApellido().trim();
         String telefono = vista.getTelefono().trim();
         String email = vista.getEmail().trim();
-
         Cliente nuevoCliente = new Cliente(dni, nombre, apellido, telefono, email);
         
         if (modelo.agregarCliente(nuevoCliente)) {
-            vista.agregarClienteATabla(dni, nombre, apellido, telefono, email);
+            cargarClientes();
             vista.limpiarFormulario();
             vista.mostrarMensaje("Cliente agregado exitosamente");
             actualizarClientesEnReservas();
         } else {
-            vista.mostrarError("Error al agregar cliente. El DNI ya existe");
+            vista.mostrarError("Error al agregar cliente");
+        }
+    }
+
+    private void eliminarCliente() {
+        int row;
+        if ((row = vista.getFilaSeleccionada()) == -1) return;
+        String cliente = vista.getTablaClientes().getValueAt(row, 0).toString();
+        
+        if (modelo.eliminarCliente(cliente)) {
+            cargarClientes();
+            vista.limpiarFormulario();
+            vista.mostrarMensaje("Cliente Eliminado exitosamente");
+            actualizarClientesEnReservas();
+        } else {
+            vista.mostrarError("Error al eliminar cliente");
         }
     }
 

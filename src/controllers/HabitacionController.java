@@ -34,18 +34,45 @@ public class HabitacionController {
             );
         }
     }
+
+    private boolean validarCamposHabitacion() {
+        String num = vista.getNumero().trim();
+        String precio = vista.getPrecio().trim();
+
+        if (num.isEmpty() || !num.matches("[1-9]\\d?")) {
+            if (num.isEmpty()) vista.mostrarError("El Nro. es obligatorio");
+            else vista.mostrarError("El Nro. no es valido (1 - 99)");
+            return false;
+        }
+
+        if (modelo.buscarHabitacionPorNumero(Integer.parseInt(num)) != null) {
+            vista.mostrarError("El Nro. ya sea registrado");
+            return false;
+        }
+
+        if (precio.isEmpty() || !precio.matches("([1-9]\\d*(\\.\\d+)?|0\\.(0*[1-9]\\d*))")) {
+            if (precio.isEmpty()) vista.mostrarError("El Precio es obligatorio");
+            else vista.mostrarError("El Precio no es valido");
+            return false;
+        }
+        
+        return true;
+    }
+
     
     private void agregarHabitacion() {
+        if (!validarCamposHabitacion()) return;
+
         try {
-            int numero = Integer.parseInt(vista.getNumero());
+            int numero = Integer.parseInt(vista.getNumero().trim());
             String tipo = vista.getTipo();
-            double precio = Double.parseDouble(vista.getPrecio());
+            double precio = Double.parseDouble(vista.getPrecio().trim());
             
             TipoHabitacion tipoHab = TipoHabitacion.valueOf(tipo);
             Habitacion nuevaHab = new Habitacion(numero, tipoHab, precio);
             
             if (modelo.agregarHabitacion(nuevaHab)) {
-                vista.agregarHabitacionATabla(numero, tipo, precio, true);
+                cargarHabitaciones();
                 vista.limpiarFormulario();
                 vista.mostrarMensaje("Habitación agregada exitosamente");
                 actualizarHabitacionesEnReservas();
@@ -54,6 +81,21 @@ public class HabitacionController {
             vista.mostrarError("Número y precio deben ser valores válidos");
         } catch (IllegalArgumentException e) {
             vista.mostrarError("Tipo de habitación no válido");
+        }
+    }
+
+    private void eliminarHabitacion() {
+        int row;
+        if ((row = vista.getFilaSeleccionada()) == -1) return;
+        String hab = vista.getTablaHabitaciones().getValueAt(row, 0).toString();
+        
+        if (modelo.eliminarHabitacion(hab)) {
+            cargarHabitaciones();
+            vista.limpiarFormulario();
+            vista.mostrarMensaje("Habitacion Eliminada exitosamente");
+            actualizarHabitacionesEnReservas();
+        } else {
+            vista.mostrarError("Error al eliminar habitacion");
         }
     }
 
@@ -66,6 +108,4 @@ public class HabitacionController {
         reservaView.cargarHabitaciones(habitacionesArray);
     }
 
-    private void eliminarHabitacion() {
-    }
 }

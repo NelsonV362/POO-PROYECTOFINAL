@@ -96,11 +96,7 @@ public class ReservaController {
         }
     }
     
-    //private void cancelarReserva() {
-    //    // Implementar lógica para cancelar reserva
-    //}
+    private void cancelarReserva() {}
     
-    //private void buscarReservas() {
-    //    // Implementar lógica para buscar reservas
-    //}
+    private void buscarReservas() {}
 }
