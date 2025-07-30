@@ -58,10 +58,8 @@ public class HabitacionController {
     }
     
     private void actualizarHabitacion() {
-        // Implementar lógica similar a ClienteController
     }
     
     private void eliminarHabitacion() {
-        // Implementar lógica similar a ClienteController
     }
 }
