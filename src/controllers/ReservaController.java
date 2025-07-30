@@ -2,7 +2,9 @@ package controllers;
 
 import models.*;
 import views.*;
-import java.time.LocalDate;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class ReservaController {
@@ -18,6 +20,7 @@ public class ReservaController {
         this.habitacionView = habitacionView;
         configurarListeners();
         cargarComboboxes();
+        cargarReservas();
     }
     
     private void configurarListeners() {
@@ -34,6 +37,26 @@ public class ReservaController {
         List<Habitacion> habitaciones = modelo.obtenerHabitaciones();
         String[] habitacionesArray = habitaciones.stream().filter(Habitacion::isDisponible).map(h -> "Hab #" + h.getNumero() + " - " + h.getTipo() + " ($" + h.getPrecioPorNoche() + ")").toArray(String[]::new);
         vista.cargarHabitaciones(habitacionesArray);
+    }
+
+    private void cargarReservas() {
+        vista.limpiarTabla();
+        for (Reserva reserva : modelo.obtenerReservas()) {
+            String estado = reserva.isActiva() ? "Activa" : "Cancelada";
+            vista.agregarReservaATabla(
+                reserva.getCodigo(),
+                reserva.getCliente().getNombre() + " " + reserva.getCliente().getApellido(),
+                "Hab #" + reserva.getHabitacion().getNumero() + " (" + reserva.getHabitacion().getTipo() + ")",
+                formatFecha(reserva.getFechaCheckIn()),
+                formatFecha(reserva.getFechaCheckOut()),
+                estado
+            );
+        }
+    }
+
+    private String formatFecha(Date fecha) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        return sdf.format(fecha);
     }
     
     private void crearReserva() {
@@ -52,8 +75,8 @@ public class ReservaController {
             
             String dniCliente = clienteStr.substring(clienteStr.indexOf("(") + 1, clienteStr.indexOf(")"));
             int numHab = Integer.parseInt(habitacionStr.substring(habitacionStr.indexOf("#") + 1, habitacionStr.indexOf(" - ")));
-            LocalDate checkIn = LocalDate.now();
-            LocalDate checkOut = LocalDate.now();
+            Date checkIn = new Date();
+            Date checkOut = new Date();
             Cliente cliente = modelo.buscarClientePorDni(dniCliente);
             Habitacion habitacion = modelo.buscarHabitacionPorNumero(numHab);
             if (cliente == null || habitacion == null) {
@@ -63,6 +86,7 @@ public class ReservaController {
      
             Reserva reserva = new Reserva(codigo, cliente, habitacion, checkIn, checkOut);
             if (modelo.agregarReserva(reserva)) {
+                vista.agregarReservaATabla(codigo, clienteStr, habitacionStr, fechaInicio, fechaFin, dniCliente);
                 vista.mostrarMensaje("Reserva creada exitosamente");
                 vista.limpiarFormulario();
                 cargarComboboxes();
@@ -72,11 +96,11 @@ public class ReservaController {
         }
     }
     
-    private void cancelarReserva() {
-        // Implementar lógica para cancelar reserva
-    }
+    //private void cancelarReserva() {
+    //    // Implementar lógica para cancelar reserva
+    //}
     
-    private void buscarReservas() {
-        // Implementar lógica para buscar reservas
-    }
+    //private void buscarReservas() {
+    //    // Implementar lógica para buscar reservas
+    //}
 }

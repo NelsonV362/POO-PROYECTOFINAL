@@ -1,10 +1,12 @@
 package models;
 
+import models.Reserva;
 import java.io.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DataManager {
@@ -34,7 +36,6 @@ public class DataManager {
         }
     }
 
-    // Método para convertir fechas en reservas.txt de milisegundos a formato ISO yyyy-MM-dd
     public void convertirReservasATextoISO() {
         List<String> lineasOriginales = cargarDatos(RESERVAS_FILE);
         List<String> lineasNuevas = new ArrayList<>();
@@ -68,7 +69,6 @@ public class DataManager {
 
                 lineasNuevas.add(lineaNueva);
             } catch (NumberFormatException e) {
-                // En caso que no sean timestamps, solo agrega la línea original
                 lineasNuevas.add(linea);
             }
         }
@@ -178,28 +178,39 @@ public class DataManager {
                 r.getCodigo(),
                 r.getCliente().getDni(),
                 String.valueOf(r.getHabitacion().getNumero()),
-                r.getFechaCheckIn().toString(),
-                r.getFechaCheckOut().toString(),
+                String.valueOf(r.getFechaCheckIn().getTime()),
+                String.valueOf(r.getFechaCheckOut().getTime()),
                 String.valueOf(r.getPrecioTotal()),
                 String.valueOf(r.isActiva())
         );
     }
 
     private Reserva txtToReserva(String linea) {
-        String[] p = linea.split(",");
-        if (p.length != 7) return null;
+        String[] partes = linea.split(",");
+        if (partes.length != 7) {
+            System.err.println("Línea con formato incorrecto: " + linea);
+            return null;
+        }
 
-        String codigo = p[0];
-        Cliente cliente = buscarClientePorDni(p[1]);
-        Habitacion habitacion = buscarHabitacionPorNumero(Integer.parseInt(p[2]));
-        if (cliente == null || habitacion == null) return null;
+        String codigo = partes[0];
+        String dniCliente = partes[1];
+        int numHabitacion = Integer.parseInt(partes[2]);
+        long fechaInicio = Long.parseLong(partes[3]);
+        long fechaFin = Long.parseLong(partes[4]);
+        boolean activa = Boolean.parseBoolean(partes[6]);
 
-        LocalDate checkIn = LocalDate.parse(p[3]);
-        LocalDate checkOut = LocalDate.parse(p[4]);
-        boolean activa = Boolean.parseBoolean(p[6]);
+        Cliente cliente = buscarClientePorDni(dniCliente);
+        Habitacion habitacion = buscarHabitacionPorNumero(numHabitacion);
 
-        Reserva reserva = new Reserva(codigo, cliente, habitacion, checkIn, checkOut);
-        if (!activa) reserva.cancelar();
+        if (cliente == null || habitacion == null) {
+            return null;
+        }
+
+        Reserva reserva = new Reserva(codigo, cliente, habitacion, new Date(fechaInicio), new Date(fechaFin));
+        if (!activa) {
+            reserva.cancelar();
+        }
+        System.out.println(reserva);
         return reserva;
     }
 }

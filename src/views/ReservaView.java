@@ -116,8 +116,15 @@ public class ReservaView extends JPanel {
         }
     }
     
-    public void agregarReservaATabla(String codigo, String cliente, String habitacion, 
-                                    String fechaInicio, String fechaFin, String estado) {
+    public void agregarReservaATabla(String codigo, String cliente, String habitacion, String fechaInicio, String fechaFin, String estado) {
+        System.out.println("\n=== DATOS DE RESERVA ===");
+        System.out.println("Código: " + codigo);
+        System.out.println("Cliente: " + cliente);
+        System.out.println("Habitación: " + habitacion);
+        System.out.println("Fecha Inicio: " + fechaInicio);
+        System.out.println("Fecha Fin: " + fechaFin);
+        System.out.println("Estado: " + estado);
+        System.out.println("=======================\n");
         modeloTabla.addRow(new Object[]{codigo, cliente, habitacion, fechaInicio, fechaFin, estado});
     }
     

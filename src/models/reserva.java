@@ -1,19 +1,18 @@
 package models;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Objects;
 public class Reserva {
     private final String codigo;
     private final Cliente cliente;
     private final Habitacion habitacion;
-    private final LocalDate fechaCheckIn;
-    private final LocalDate fechaCheckOut;
+    private final Date fechaCheckIn;
+    private final Date fechaCheckOut;
     private final double precioTotal;
     private boolean activa;
 
-    public Reserva(String codigo, Cliente cliente, Habitacion habitacion, LocalDate fechaCheckIn, LocalDate fechaCheckOut) {
-        if (fechaCheckOut.isBefore(fechaCheckIn)) {
-            throw new IllegalArgumentException("La fecha de check-out no puede ser nunca una fecha pasada al check-in.");
+    public Reserva(String codigo, Cliente cliente, Habitacion habitacion, Date fechaCheckIn, Date fechaCheckOut) {
+        if (fechaCheckOut.before(fechaCheckIn)) {
+            throw new IllegalArgumentException("La fecha de check-out no puede ser anterior a la fecha de check-in.");
         }
         this.codigo = Objects.requireNonNull(codigo, "Código no puede ser null");
         this.cliente = Objects.requireNonNull(cliente, "Cliente no puede ser null");
@@ -24,8 +23,9 @@ public class Reserva {
         this.precioTotal = calcularPrecioTotal();
     }
 
-    private double calcularPrecioTotal() {
-        long noches = ChronoUnit.DAYS.between(fechaCheckIn, fechaCheckOut);
+   private double calcularPrecioTotal() {
+        long diffEnMillis = fechaCheckOut.getTime() - fechaCheckIn.getTime();
+        long noches = diffEnMillis / (1000 * 60 * 60 * 24);
         return noches * habitacion.getPrecioPorNoche();
     }
 
@@ -41,11 +41,11 @@ public class Reserva {
         return habitacion;
     }
 
-    public LocalDate getFechaCheckIn() {
+    public Date getFechaCheckIn() {
         return fechaCheckIn;
     }
 
-    public LocalDate getFechaCheckOut() {
+    public Date getFechaCheckOut() {
         return fechaCheckOut;
     }
 
