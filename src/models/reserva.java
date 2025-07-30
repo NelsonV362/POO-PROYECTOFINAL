@@ -1,9 +1,7 @@
 package models;
-
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
-
 public class Reserva {
     private final String codigo;
     private final Cliente cliente;
@@ -12,10 +10,9 @@ public class Reserva {
     private final LocalDate fechaCheckOut;
     private final double precioTotal;
     private boolean activa;
-
     public Reserva(String codigo, Cliente cliente, Habitacion habitacion, LocalDate fechaCheckIn, LocalDate fechaCheckOut) {
         if (fechaCheckOut.isBefore(fechaCheckIn)) {
-            throw new IllegalArgumentException("La fecha de check-out no puede ser anterior al check-in.");
+            throw new IllegalArgumentException("La fecha de check-out no puede ser nunca una fecha pasada al check-in.");
         }
         this.codigo = Objects.requireNonNull(codigo, "Código no puede ser null");
         this.cliente = Objects.requireNonNull(cliente, "Cliente no puede ser null");
