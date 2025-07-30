@@ -1,8 +1,8 @@
 package models;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class DataManager {
@@ -133,12 +133,15 @@ public class DataManager {
     }
 
     private String reservaToTxt(Reserva r) {
-        return String.join(",", r.getCodigo(), r.getCliente().getDni(),
+        return String.join(",",
+                r.getCodigo(),
+                r.getCliente().getDni(),
                 String.valueOf(r.getHabitacion().getNumero()),
-                String.valueOf(r.getFechaCheckIn().getTime()),
-                String.valueOf(r.getFechaCheckOut().getTime()),
+                String.valueOf(r.getFechaCheckIn().toEpochDay()),
+                String.valueOf(r.getFechaCheckOut().toEpochDay()),
                 String.valueOf(r.getPrecioTotal()),
-                String.valueOf(r.isActiva()));
+                String.valueOf(r.isActiva())
+        );
     }
 
     private Reserva txtToReserva(String linea) {
@@ -150,8 +153,8 @@ public class DataManager {
         Habitacion habitacion = buscarHabitacionPorNumero(Integer.parseInt(p[2]));
         if (cliente == null || habitacion == null) return null;
 
-        Date checkIn = new Date(Long.parseLong(p[3]));
-        Date checkOut = new Date(Long.parseLong(p[4]));
+        LocalDate checkIn = LocalDate.ofEpochDay(Long.parseLong(p[3]));
+        LocalDate checkOut = LocalDate.ofEpochDay(Long.parseLong(p[4]));
         boolean activa = Boolean.parseBoolean(p[6]);
 
         Reserva reserva = new Reserva(codigo, cliente, habitacion, checkIn, checkOut);
