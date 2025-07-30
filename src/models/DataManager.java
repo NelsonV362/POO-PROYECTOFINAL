@@ -1,7 +1,9 @@
 package models;
 
 import java.io.*;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,48 @@ public class DataManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    // Método para convertir fechas en reservas.txt de milisegundos a formato ISO yyyy-MM-dd
+    public void convertirReservasATextoISO() {
+        List<String> lineasOriginales = cargarDatos(RESERVAS_FILE);
+        List<String> lineasNuevas = new ArrayList<>();
+
+        for (String linea : lineasOriginales) {
+            String[] p = linea.split(",");
+            if (p.length != 7) continue;
+
+            String codigo = p[0];
+            String dniCliente = p[1];
+            String numeroHab = p[2];
+
+            try {
+                long checkInMillis = Long.parseLong(p[3]);
+                long checkOutMillis = Long.parseLong(p[4]);
+                LocalDate checkIn = Instant.ofEpochMilli(checkInMillis).atZone(ZoneId.systemDefault()).toLocalDate();
+                LocalDate checkOut = Instant.ofEpochMilli(checkOutMillis).atZone(ZoneId.systemDefault()).toLocalDate();
+
+                String precioTotal = p[5];
+                String activa = p[6];
+
+                String lineaNueva = String.join(",",
+                    codigo,
+                    dniCliente,
+                    numeroHab,
+                    checkIn.toString(),
+                    checkOut.toString(),
+                    precioTotal,
+                    activa
+                );
+
+                lineasNuevas.add(lineaNueva);
+            } catch (NumberFormatException e) {
+                // En caso que no sean timestamps, solo agrega la línea original
+                lineasNuevas.add(linea);
+            }
+        }
+
+        guardarDatos(RESERVAS_FILE, lineasNuevas);
     }
 
     public Usuario autenticarUsuario(String nombre, String password) {
@@ -98,8 +142,12 @@ public class DataManager {
     }
 
     private String habitacionToTxt(Habitacion h) {
-        return String.join(",", String.valueOf(h.getNumero()), h.getTipo().name(),
-                String.valueOf(h.getPrecioPorNoche()), String.valueOf(h.isDisponible()));
+        return String.join(",",
+            String.valueOf(h.getNumero()),
+            h.getTipo().name(),
+            String.valueOf(h.getPrecioPorNoche()),
+            String.valueOf(h.isDisponible())
+        );
     }
 
     public Habitacion buscarHabitacionPorNumero(int numero) {
@@ -125,13 +173,12 @@ public class DataManager {
         return lista;
     }
 
-    // ✅ Guardar fechas en formato ISO yyyy-MM-dd
     private String reservaToTxt(Reserva r) {
         return String.join(",",
                 r.getCodigo(),
                 r.getCliente().getDni(),
                 String.valueOf(r.getHabitacion().getNumero()),
-                r.getFechaCheckIn().toString(), // Guardar fecha como texto
+                r.getFechaCheckIn().toString(),
                 r.getFechaCheckOut().toString(),
                 String.valueOf(r.getPrecioTotal()),
                 String.valueOf(r.isActiva())
