@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataManager {
-    private static final String CLIENTES_FILE = "clientes.txt";
-    private static final String HABITACIONES_FILE = "habitaciones.txt";
-    private static final String RESERVAS_FILE = "reservas.txt";
+    public static final String CLIENTES_FILE = "clientes.txt";
+    public static final String HABITACIONES_FILE = "habitaciones.txt";
+    public static final String RESERVAS_FILE = "reservas.txt";
     public static final String USUARIOS_FILE = "usuarios.txt";
 
-    private List<String> cargarDatos(String archivo) {
+    public List<String> cargarDatos(String archivo) {
         List<String> datos = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
             String linea;
@@ -23,7 +23,7 @@ public class DataManager {
         return datos;
     }
 
-    private void guardarDatos(String archivo, List<String> datos) {
+    public void guardarDatos(String archivo, List<String> datos) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(archivo))) {
             for (String linea : datos) {
                 writer.println(linea);
