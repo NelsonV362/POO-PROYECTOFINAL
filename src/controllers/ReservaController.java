@@ -2,10 +2,7 @@ package controllers;
 
 import models.*;
 import views.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 public class ReservaController {
@@ -68,7 +65,7 @@ public class ReservaController {
             if (modelo.agregarReserva(reserva)) {
                 vista.mostrarMensaje("Reserva creada exitosamente");
                 vista.limpiarFormulario();
-                cargarComboboxes(); // Actualizar habitaciones disponibles
+                cargarComboboxes();
             }
         } catch (Exception e) {
             vista.mostrarError("Error al crear reserva: " + e.getMessage());

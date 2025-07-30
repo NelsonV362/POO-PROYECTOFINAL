@@ -48,16 +48,41 @@ public class ClienteView extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    public JTable getTablaClientes() { return tablaClientes; }
-    public JButton getBtnAgregar() { return btnAgregar; }
-    public JButton getBtnActualizar() { return btnActualizar; }
-    public JButton getBtnEliminar() { return btnEliminar; }
+    public JTable getTablaClientes() {
+        return tablaClientes;
+    }
 
-    public String getDni() { return txtDni.getText(); }
-    public String getNombre() { return txtNombre.getText(); }
-    public String getApellido() { return txtApellido.getText(); }
-    public String getTelefono() { return txtTelefono.getText(); }
-    public String getEmail() { return txtEmail.getText(); }
+    public JButton getBtnAgregar() {
+        return btnAgregar;
+    }
+
+    public JButton getBtnActualizar() {
+        return btnActualizar;
+    }
+
+    public JButton getBtnEliminar() {
+        return btnEliminar;
+    }
+
+    public String getDni() {
+        return txtDni.getText();
+    }
+
+    public String getNombre() {
+        return txtNombre.getText();
+    }
+
+    public String getApellido() {
+        return txtApellido.getText();
+    }
+
+    public String getTelefono() {
+        return txtTelefono.getText();
+    }
+
+    public String getEmail() {
+        return txtEmail.getText();
+    }
 
     public void agregarClienteATabla(String dni, String nombre, String apellido, String telefono, String email) {
         modeloTabla.addRow(new Object[]{dni, nombre, apellido, telefono, email});

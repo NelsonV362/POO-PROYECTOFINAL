@@ -41,12 +41,30 @@ public class HabitacionView extends JPanel {
         add(new JScrollPane(tablaHabitaciones), BorderLayout.CENTER);
     }
 
-    public String getNumero() { return txtNumero.getText(); }
-    public String getTipo() { return (String) cbTipo.getSelectedItem(); }
-    public String getPrecio() { return txtPrecio.getText(); }
-    public JButton getBtnAgregar() { return btnAgregar; }
-    public JButton getBtnActualizar() { return btnActualizar; }
-    public JButton getBtnEliminar() { return btnEliminar; }
+    public String getNumero() {
+        return txtNumero.getText();
+    }
+
+    public String getTipo() {
+        return (String) cbTipo.getSelectedItem();
+    }
+
+    public String getPrecio() {
+        return txtPrecio.getText();
+    }
+
+    public JButton getBtnAgregar() {
+        return btnAgregar;
+    }
+
+    public JButton getBtnActualizar() {
+        return btnActualizar;
+    }
+
+    public JButton getBtnEliminar() {
+        return btnEliminar;
+    }
+
     public void agregarHabitacionATabla(int numero, String tipo, double precio, boolean disponible) {
         modeloTabla.addRow(new Object[]{numero, tipo, precio, disponible ? "Sí" : "No"});
     }

@@ -2,8 +2,6 @@ package controllers;
 
 import models.*;
 import views.*;
-import java.awt.event.*;
-import java.util.List;
 
 public class ClienteController {
     private ClienteView vista;
