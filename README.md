@@ -1,18 +1,20 @@
-## Getting Started
+# Sistema de Gestión de Hotel
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+## Integrantes
+- Andres Villalta (Rol: Vista/Controlador)
+- Nelson VIllalta (Rol: Modelo/Persistencia)
+## Requisitos
+- Java 11+
+- Librerías: [Listar si usan SQLite, JCalendar, etc.]
+## Instrucciones
+1. Clonar repositorio: `git clone [url]`
+2. Ejecutar: `mvn compile` o abrir en IDE.
+3. Iniciar: `java -cp target/classes main.Main`
+## Capturas
+![alt text](<capturas/Captura de pantalla 2025-07-30 005937.png>)
+![alt text](<capturas/Captura de pantalla 2025-07-30 010007.png>)
+![alt text](<capturas/Captura de pantalla 2025-07-30 010039.png>)
+![alt text](<capturas/Captura de pantalla 2025-07-30 010042.png>)
 
-## Folder Structure
-
-The workspace contains two folders by default, where:
-
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+## Diagrama UML
+![UML](/diagramas/uml_hotel.png
