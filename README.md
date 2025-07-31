@@ -14,7 +14,7 @@
 ![alt text](<capturas/Captura de pantalla 2025-07-30 005937.png>)
 ![alt text](<capturas/Captura de pantalla 2025-07-30 010007.png>)
 ![alt text](<capturas/Captura de pantalla 2025-07-30 010039.png>)
-![alt text](<capturas/Captura de pantalla 2025-07-30 010042.png>)
+![alt text](<capturas/Captura de pantalla 2025-07-30 234905.png>)
 
 ## Diagrama UML
-![alt text](capturas/uml.png)
+![alt text](capturas/DIAGRAMA-UML.png)
