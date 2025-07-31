@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ReservaView extends JPanel {
-    private JTextField txtCodigo;
     private JComboBox<String> cbClientes;
     private JComboBox<String> cbHabitaciones;
     private JSpinner checkIn;
@@ -21,12 +20,8 @@ public class ReservaView extends JPanel {
     public ReservaView() {
         setLayout(new BorderLayout(10, 10));
         
-        JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+        JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         formPanel.setBorder(BorderFactory.createTitledBorder("Nueva Reserva"));
-        
-        formPanel.add(new JLabel("Código:"));
-        txtCodigo = new JTextField();
-        formPanel.add(txtCodigo);
         
         formPanel.add(new JLabel("Cliente:"));
         cbClientes = new JComboBox<>();
@@ -65,6 +60,7 @@ public class ReservaView extends JPanel {
         modeloTabla.addColumn("Habitación");
         modeloTabla.addColumn("Fecha Inicio");
         modeloTabla.addColumn("Fecha Fin");
+        modeloTabla.addColumn("Precio ($)");
         modeloTabla.addColumn("Estado");
         
         tablaReservas = new JTable(modeloTabla);
@@ -73,11 +69,11 @@ public class ReservaView extends JPanel {
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
     }
-    
-    public String getCodigo() {
-        return txtCodigo.getText();
-    }
 
+    public JTable getTablaReservas() {
+        return tablaReservas;
+    }
+    
     public String getClienteSeleccionado() {
         return (String) cbClientes.getSelectedItem();
     }
@@ -119,17 +115,9 @@ public class ReservaView extends JPanel {
             cbHabitaciones.addItem(habitacion);
         }
     }
-    
-    public void agregarReservaATabla(String codigo, String cliente, String habitacion, String fechaInicio, String fechaFin, String estado) {
-        System.out.println("\n=== DATOS DE RESERVA ===");
-        System.out.println("Código: " + codigo);
-        System.out.println("Cliente: " + cliente);
-        System.out.println("Habitación: " + habitacion);
-        System.out.println("Fecha Inicio: " + fechaInicio);
-        System.out.println("Fecha Fin: " + fechaFin);
-        System.out.println("Estado: " + estado);
-        System.out.println("=======================\n");
-        modeloTabla.addRow(new Object[]{codigo, cliente, habitacion, fechaInicio, fechaFin, estado});
+
+    public void agregarReservaATabla(String codigo, String cliente, String habitacion, String fechaInicio, String fechaFin, String Precio, String estado) {
+        modeloTabla.addRow(new Object[]{codigo, cliente, habitacion, fechaInicio, fechaFin, Precio, estado});
     }
     
     public void limpiarTabla() {
@@ -137,7 +125,6 @@ public class ReservaView extends JPanel {
     }
     
     public void limpiarFormulario() {
-        txtCodigo.setText("");
         checkIn.setValue(new Date());
         checkOut.setValue(new Date());
     }

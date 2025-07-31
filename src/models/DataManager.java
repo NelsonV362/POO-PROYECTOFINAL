@@ -1,6 +1,5 @@
 package models;
 
-import models.Reserva;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -184,31 +183,19 @@ public class DataManager {
         );
     }
 
-
-    // public List<Reserva> obtenerReservas() {
-    //     List<Reserva> lista = new ArrayList<>();
-    //     for (String linea : cargarDatos(RESERVAS_FILE)) {
-    //         Reserva r = txtToReserva(linea);
-    //         if (r != null) lista.add(r);
-    //     }
-    //     return lista;
-    // }
     
     public List<Reserva> obtenerReservas() {
         List<Reserva> lista = new ArrayList<>();
         for (String linea : cargarDatos(RESERVAS_FILE)) {
             String[] p = linea.split(",");
-            if (p.length == 7) {
+            if (p.length == 6) {
                 String codigo = p[0];
                 Cliente cliente = buscarClientePorDni(p[1]);
                 Habitacion habitacion = buscarHabitacionPorNumero(Integer.parseInt(p[2]));
-                Date checkIn = new SimpleDateFormat("dd/MM/yyyy").parse("");
-                int num = Integer.parseInt(p[0]);
-                TipoHabitacion tipo = TipoHabitacion.valueOf(p[1]);
-                double precio = Double.parseDouble(p[2]);
-                boolean disponible = Boolean.parseBoolean(p[3]);
-                Reserva r = new Reserva(codigo, cliente, null, null, null, disponible);
-                Habitacion h = new Habitacion(num, tipo, precio);
+                Date checkIn = parseDate(p[3]);
+                Date checkOut = parseDate(p[4]);
+                boolean activa = Boolean.parseBoolean(p[5]);
+                Reserva r = new Reserva(codigo, cliente, habitacion, checkIn, checkOut, activa);
                 lista.add(r);
             }
         }
@@ -222,29 +209,76 @@ public class DataManager {
         return true;
     }
 
+    public boolean eliminarReserva(String dni, String nro) {
+        List<String> reservas = cargarDatos(RESERVAS_FILE);
+        boolean eliminado = false;
+
+        if (dni!=null) {
+            eliminado = reservas.removeIf(linea -> {
+                String[] partes = linea.split(",");
+                return partes.length > 0 && partes[1].equals(dni);
+            });
+        } else {
+            eliminado = reservas.removeIf(linea -> {
+                String[] partes = linea.split(",");
+                return partes.length > 0 && partes[2].equals(nro);
+            });
+        }
+
+        if (eliminado) {
+            guardarDatos(RESERVAS_FILE, reservas);
+        }
+        return eliminado;
+    }
+
+    public boolean cancelarReserva(String codigo) {
+        List<Reserva> reservas = obtenerReservas();
+        boolean encontrada = false;
+        for (Reserva r : reservas) {
+            if (r.getCodigo().equals(codigo) && r.isActiva()) {
+                r.cancelar();
+                encontrada = true;
+                break;
+            }
+        }
+        if (encontrada) {
+            List<String> lineas = new ArrayList<>();
+            for (Reserva r : reservas) {
+                lineas.add(reservaToTxt(r));
+            }
+            guardarDatos(RESERVAS_FILE, lineas);
+        }
+
+        return encontrada;
+    }
+
+    public String obtenerCodigoReserva() {
+        List<Reserva> reservas = obtenerReservas();
+        if (reservas.isEmpty()) return "1";
+        int codigo = Integer.parseInt(reservas.getLast().getCodigo())+1;
+        return String.valueOf(codigo);
+    }
+
     private String reservaToTxt(Reserva r) {
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
         return String.join(",",
                 r.getCodigo(),
                 r.getCliente().getDni(),
                 String.valueOf(r.getHabitacion().getNumero()),
-                String.valueOf(r.getFechaCheckIn().getTime()),
-                String.valueOf(r.getFechaCheckOut().getTime()),
-                String.valueOf(r.getPrecioTotal()),
+                formato.format(r.getCheckIn()),
+                formato.format(r.getCheckOut()),
                 String.valueOf(r.isActiva())
         );
     }
 
-    private Reserva txtToReserva(String linea) {
-
-        long fechaInicio = Long.parseLong(partes[3]);
-        long fechaFin = Long.parseLong(partes[4]);
-        boolean activa = Boolean.parseBoolean(partes[6]);
-
-        Reserva reserva = new Reserva(codigo, cliente, habitacion, new Date(fechaInicio), new Date(fechaFin));
-        if (!activa) {
-            reserva.cancelar();
+    private Date parseDate(String date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            return formatter.parse(date);
+        } catch (Exception e) {
+            System.err.println("Error al parsear la fecha");
+            return null;
         }
-        System.out.println(reserva);
-        return reserva;
     }
+
 }

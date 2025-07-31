@@ -2,6 +2,8 @@ package controllers;
 
 import models.*;
 import views.*;
+
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class HabitacionController {
@@ -91,7 +93,7 @@ public class HabitacionController {
         
         if (modelo.eliminarHabitacion(hab)) {
             cargarHabitaciones();
-            vista.limpiarFormulario();
+            modelo.eliminarReserva(null, hab);
             vista.mostrarMensaje("Habitacion Eliminada exitosamente");
             actualizarHabitacionesEnReservas();
         } else {
@@ -101,11 +103,22 @@ public class HabitacionController {
 
     private void actualizarHabitacionesEnReservas() {
         List<Habitacion> habitaciones = modelo.obtenerHabitaciones();
-        String[] habitacionesArray = habitaciones.stream()
-            .filter(Habitacion::isDisponible)
-            .map(h -> "Hab #" + h.getNumero() + " - " + h.getTipo() + " ($" + h.getPrecioPorNoche() + ")")
-            .toArray(String[]::new);
+        String[] habitacionesArray = habitaciones.stream().filter(Habitacion::isDisponible).map(h -> "Hab #" + h.getNumero() + " - " + h.getTipo() + " ($" + h.getPrecioPorNoche() + ")").toArray(String[]::new);
         reservaView.cargarHabitaciones(habitacionesArray);
+
+        reservaView.limpiarTabla();
+        for (Reserva reserva : modelo.obtenerReservas()) {
+            String estado = reserva.isActiva() ? "Activa" : "Cancelada";
+            reservaView.agregarReservaATabla(
+                reserva.getCodigo(),
+                reserva.getCliente().getNombre() + " " + reserva.getCliente().getApellido(),
+                "Hab #" + reserva.getHabitacion().getNumero() + " (" + reserva.getHabitacion().getTipo() + ")",
+                new SimpleDateFormat("dd/MM/yyyy").format(reserva.getCheckIn()),
+                new SimpleDateFormat("dd/MM/yyyy").format(reserva.getCheckOut()),
+                String.valueOf(reserva.getPrecioTotal()),
+                estado
+            );
+        }
     }
 
 }

@@ -3,9 +3,11 @@ package controllers;
 import models.*;
 import views.*;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReservaController {
     private ReservaView vista;
@@ -47,82 +49,102 @@ public class ReservaController {
                 reserva.getCodigo(),
                 reserva.getCliente().getNombre() + " " + reserva.getCliente().getApellido(),
                 "Hab #" + reserva.getHabitacion().getNumero() + " (" + reserva.getHabitacion().getTipo() + ")",
-                formatFecha(reserva.getFechaCheckIn()),
-                formatFecha(reserva.getFechaCheckOut()),
+                new SimpleDateFormat("dd/MM/yyyy").format(reserva.getCheckIn()),
+                new SimpleDateFormat("dd/MM/yyyy").format(reserva.getCheckOut()),
+                String.valueOf(reserva.getPrecioTotal()),
                 estado
             );
         }
     }
-
-    private String formatFecha(Date fecha) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        return sdf.format(fecha);
-    }
     
 
     private boolean validarCamposReserva() {
-        String num = vista.getNumero().trim();
-        String precio = vista.getPrecio().trim();
+        try {
+            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+            formato.setLenient(false);
+            Date checkIn = formato.parse(vista.getCheckIn());
+            Date checkOut = formato.parse(vista.getCheckOut());
+            String f1 = formato.format(checkIn);
+            String f2 = formato.format(checkOut);
 
-        if (num.isEmpty() || !num.matches("[1-9]\\d?")) {
-            if (num.isEmpty()) vista.mostrarError("El Nro. es obligatorio");
-            else vista.mostrarError("El Nro. no es valido (1 - 99)");
+            if (vista.getCheckIn() == vista.getCheckOut() || !checkIn.before(checkOut)) {
+                vista.mostrarError("CheckIn y/o CheckOut no valido(s)");
+                return false;
+            }
+
+            if (vista.getClienteSeleccionado() == null) {
+                vista.mostrarError("El Cliente es obligatorio");
+                return false;
+            }
+
+            if (vista.getHabitacionSeleccionada() == null) {
+                vista.mostrarError("La Habitacion es obligatorio");
+                return false;
+            }
+
+            String habitacionStr = vista.getHabitacionSeleccionada();
+            int numHab = Integer.parseInt(habitacionStr.substring(habitacionStr.indexOf("#") + 1, habitacionStr.indexOf(" - ")));
+            Habitacion habitacion = modelo.buscarHabitacionPorNumero(numHab);
+
+            
+            List<Reserva> reservas = modelo.obtenerReservas().stream().filter(r -> r.getHabitacion().getNumero() == habitacion.getNumero() && r.isActiva()).collect(Collectors.toList());
+            for (Reserva r : reservas) {
+                if (!(checkOut.before(r.getCheckIn()) || r.getCheckOut().before(checkIn))) {
+                    vista.mostrarError("CheckIn y/o CheckOut se cruzan con otra(s) reservacion(es)");
+                    return false;
+                }
+            }
+        } catch (ParseException e) {
+            vista.mostrarError("CheckIn y/o CheckOut no valido(s)");
             return false;
         }
-
-        if (modelo.buscarHabitacionPorNumero(Integer.parseInt(num)) != null) {
-            vista.mostrarError("El Nro. ya sea registrado");
-            return false;
-        }
-
-        if (precio.isEmpty() || !precio.matches("([1-9]\\d*(\\.\\d+)?|0\\.(0*[1-9]\\d*))")) {
-            if (precio.isEmpty()) vista.mostrarError("El Precio es obligatorio");
-            else vista.mostrarError("El Precio no es valido");
-            return false;
-        }
-        
         return true;
     }
 
 
     private void crearReserva() {
+        if (!validarCamposReserva()) return;
+
+        String codigo = modelo.obtenerCodigoReserva();
+        String clienteStr = vista.getClienteSeleccionado();
+        String dniCliente = clienteStr.substring(clienteStr.indexOf("(") + 1, clienteStr.indexOf(")"));
+        Cliente cliente = modelo.buscarClientePorDni(dniCliente);
+        String habitacionStr = vista.getHabitacionSeleccionada();
+        int numHab = Integer.parseInt(habitacionStr.substring(habitacionStr.indexOf("#") + 1, habitacionStr.indexOf(" - ")));
+        Habitacion habitacion = modelo.buscarHabitacionPorNumero(numHab);
+        Date checkIn;
+        Date checkOut;
         try {
-            String codigo = vista.getCodigo();
-            String clienteStr = vista.getClienteSeleccionado();
-            String habitacionStr = vista.getHabitacionSeleccionada();
-            String fechaInicio = vista.getCheckIn();
-            String fechaFin = vista.getCheckOut();
-            
-            if (codigo.isEmpty() || clienteStr == null || habitacionStr == null || 
-                fechaInicio.isEmpty() || fechaFin.isEmpty()) {
-                vista.mostrarError("Todos los campos son obligatorios");
-                return;
-            }
-            
-            String dniCliente = clienteStr.substring(clienteStr.indexOf("(") + 1, clienteStr.indexOf(")"));
-            int numHab = Integer.parseInt(habitacionStr.substring(habitacionStr.indexOf("#") + 1, habitacionStr.indexOf(" - ")));
-            Date checkIn = new Date();
-            Date checkOut = new Date();
-            Cliente cliente = modelo.buscarClientePorDni(dniCliente);
-            Habitacion habitacion = modelo.buscarHabitacionPorNumero(numHab);
-            if (cliente == null || habitacion == null) {
-                vista.mostrarError("Cliente o habitación no encontrados");
-                return;
-            }
-     
-            Reserva reserva = new Reserva(codigo, cliente, habitacion, checkIn, checkOut);
-            if (modelo.agregarReserva(reserva)) {
-                vista.agregarReservaATabla(codigo, clienteStr, habitacionStr, fechaInicio, fechaFin, dniCliente);
-                vista.mostrarMensaje("Reserva creada exitosamente");
-                vista.limpiarFormulario();
-                cargarComboboxes();
-            }
-        } catch (Exception e) {
-            vista.mostrarError("Error al crear reserva: " + e.getMessage());
+            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+            checkIn = formato.parse(vista.getCheckIn());
+            checkOut = formato.parse(vista.getCheckOut());
+        } catch (ParseException e) {
+            return;
+        }
+        Reserva nuevaReserva = new Reserva(codigo, cliente, habitacion, checkIn, checkOut, true);
+        
+        if (modelo.agregarReserva(nuevaReserva)) {
+            cargarReservas();
+            vista.limpiarFormulario();
+            vista.mostrarMensaje("Reserva registrada exitosamente");
+        } else {
+            vista.mostrarError("Error al registrar reserva");
         }
     }
     
-    private void cancelarReserva() {}
+    private void cancelarReserva() {
+        int row;
+        if ((row = vista.getFilaSeleccionada()) == -1) return;
+        String cliente = vista.getTablaReservas().getValueAt(row, 0).toString();
+        
+        if (modelo.cancelarReserva(cliente)) {
+            cargarReservas();
+            vista.limpiarFormulario();
+            vista.mostrarMensaje("Cliente Eliminado exitosamente");
+        } else {
+            vista.mostrarError("Error al eliminar cliente");
+        }
+    }
     
     private void buscarReservas() {}
 }

@@ -1,5 +1,6 @@
 package controllers;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import models.*;
@@ -102,7 +103,7 @@ public class ClienteController {
         
         if (modelo.eliminarCliente(cliente)) {
             cargarClientes();
-            vista.limpiarFormulario();
+            modelo.eliminarReserva(cliente, null);
             vista.mostrarMensaje("Cliente Eliminado exitosamente");
             actualizarClientesEnReservas();
         } else {
@@ -116,5 +117,20 @@ public class ClienteController {
             .map(c -> c.getNombre() + " " + c.getApellido() + " (" + c.getDni() + ")")
             .toArray(String[]::new);
         reservaView.cargarClientes(clientesArray);
+
+        reservaView.limpiarTabla();
+        for (Reserva reserva : modelo.obtenerReservas()) {
+            String estado = reserva.isActiva() ? "Activa" : "Cancelada";
+            reservaView.agregarReservaATabla(
+                reserva.getCodigo(),
+                reserva.getCliente().getNombre() + " " + reserva.getCliente().getApellido(),
+                "Hab #" + reserva.getHabitacion().getNumero() + " (" + reserva.getHabitacion().getTipo() + ")",
+                new SimpleDateFormat("dd/MM/yyyy").format(reserva.getCheckIn()),
+                new SimpleDateFormat("dd/MM/yyyy").format(reserva.getCheckOut()),
+                String.valueOf(reserva.getPrecioTotal()),
+                estado
+            );
+        }
+
     }
 }

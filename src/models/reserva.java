@@ -1,32 +1,28 @@
 package models;
 import java.util.Date;
-import java.util.Objects;
+
 public class Reserva {
-    private final String codigo;
-    private final Cliente cliente;
-    private final Habitacion habitacion;
-    private final Date fechaCheckIn;
-    private final Date fechaCheckOut;
-    private final double precioTotal;
+    private String codigo;
+    private Cliente cliente;
+    private Habitacion habitacion;
+    private Date checkIn;
+    private Date checkOut;
+    private double precioTotal;
     private boolean activa;
 
-    public Reserva(String codigo, Cliente cliente, Habitacion habitacion, Date fechaCheckIn, Date fechaCheckOut, boolean activa) {
-        if (fechaCheckOut.before(fechaCheckIn)) {
-            throw new IllegalArgumentException("La fecha de check-out no puede ser anterior a la fecha de check-in.");
-        }
-        this.codigo = Objects.requireNonNull(codigo, "Código no puede ser null");
-        this.cliente = Objects.requireNonNull(cliente, "Cliente no puede ser null");
-        this.habitacion = Objects.requireNonNull(habitacion, "Habitación no puede ser null");
-        this.fechaCheckIn = fechaCheckIn;
-        this.fechaCheckOut = fechaCheckOut;
+    public Reserva(String codigo, Cliente cliente, Habitacion habitacion, Date checkIn, Date checkOut, boolean activa) {
+        this.codigo = codigo;
+        this.cliente = cliente;
+        this.habitacion = habitacion;
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
         this.activa = activa;
-        this.precioTotal = calcularPrecioTotal();
+        precioTotal = calcularPrecioTotal();
     }
 
-   private double calcularPrecioTotal() {
-        long diffEnMillis = fechaCheckOut.getTime() - fechaCheckIn.getTime();
-        long noches = diffEnMillis / (1000 * 60 * 60 * 24);
-        return noches * habitacion.getPrecioPorNoche();
+    private double calcularPrecioTotal() {
+        long dias = (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24);
+        return dias * habitacion.getPrecioPorNoche();
     }
 
    public String getCodigo() {
@@ -41,12 +37,12 @@ public class Reserva {
         return habitacion;
     }
 
-    public Date getFechaCheckIn() {
-        return fechaCheckIn;
+    public Date getCheckIn() {
+        return checkIn;
     }
 
-    public Date getFechaCheckOut() {
-        return fechaCheckOut;
+    public Date getCheckOut() {
+        return checkOut;
     }
 
     public double getPrecioTotal() {
